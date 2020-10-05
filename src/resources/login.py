@@ -1,6 +1,6 @@
 from models.user import User
 from flask_restful import Resource, reqparse
-from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_jwt_extended import create_access_token
 
 # Request body parser for login resource
 parser = reqparse.RequestParser()
@@ -26,11 +26,9 @@ class UserLogin(Resource):
 
     if User.verify_hash(data["password"], user.password):
       access_token = create_access_token(identity=username)
-      refresh_token = create_refresh_token(identity=username)
       return {
         "message": "Logged in as {}".format(user.username),
-        "access_token": access_token,
-        "refresh_token": refresh_token
+        "access_token": access_token
       }
     else:
       return {"message": "Invalid username or password"}, 500
