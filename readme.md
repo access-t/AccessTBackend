@@ -87,12 +87,11 @@
 { status: 403, data: "<Reason>" }
 ~~~
 
-## /api/collections/:name -> GET
+## /api/collections?name=<name> -> GET
 ### This endpoint retrieves a specific collection by a given name
 
 #### Request body:
 * auth_token: string
-* collection_name: string
 #### Returns:
 * Success:
 ~~~

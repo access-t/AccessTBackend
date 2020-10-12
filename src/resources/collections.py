@@ -5,6 +5,10 @@ from flask_jwt_extended import jwt_required
 from models.user import User
 from models.collection import Collection
 
+# Request body parser for collections GET resource
+parser_get = reqparse.RequestParser()
+parser_get.add_argument("name")
+
 # Request body parser for collections POST resource
 parser_post = reqparse.RequestParser()
 parser_post.add_argument("collection_name",
@@ -21,12 +25,16 @@ class Collections(Resource):
 
   @jwt_required
   def get(self):
-    pass
+    data = parser_get.parse_args()
+    name = data["name"]
+    if not name:
+      return Collection.return_all(get_jwt_identity())
+    return Collection.return_by_name(get_jwt_identity(), name)
 
   @jwt_required
   # TODO this will let you create multiple collections with the same name.
   # I can enforce a unique constraint on this, or I could not?
-  # DO more thinking about if we want to allow multiple collections with the same name
+  # Do more thinking about if we want to allow multiple collections with the same name
   def post(self):
     data = parser_post.parse_args()
     collection_name = data["collection_name"]
