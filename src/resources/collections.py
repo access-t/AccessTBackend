@@ -3,7 +3,7 @@ from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required
 
 from models.user import User
-from models.collection import Collection
+from models.collection import Collection, Item
 
 # Request body parser for collections GET resource
 parser_get = reqparse.RequestParser()
@@ -17,6 +17,16 @@ parser_post.add_argument("collection_name",
 parser_post.add_argument("image_path",
                          help="This field cannot be blank",
                          required=True)
+
+# Request body parser for collections PUT resource
+parser_put = reqparse.RequestParser()
+parser_put.add_argument("collection_name",
+                        help="This field cannot be blank",
+                        required=True)
+parser_put.add_argument("item",
+                        help="This field cannot be blank",
+                        required=True,
+                        type=dict)
 
 
 # User collections resource
@@ -55,3 +65,27 @@ class Collections(Resource):
       }
     except:
       return {"message": "Could not add new collection"}, 500
+
+  @jwt_required
+  def put(self):
+    data = parser_put.parse_args()
+    collection_name = data["collection_name"]
+    item = data["item"]
+    username = get_jwt_identity()
+    user = User.find_by_username(username)
+
+    if not user:
+      return {"message": "User {} doesn't exist".format(username)}, 500
+
+    collection = Collection.query.filter_by(user_id=user.id,
+                                            name=collection_name).first()
+    collection.items.append(
+      Item(name=item["name"], image_path=item["image_path"]))
+
+    try:
+      collection.save_to_db()
+      return {
+        "message": "Collection {} was updated".format(collection_name),
+      }
+    except:
+      return {"message": "Could not update collection"}, 500

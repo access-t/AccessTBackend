@@ -14,6 +14,10 @@ class Item(db.Model):
                             db.ForeignKey("collections.id"),
                             nullable=False)
 
+  # For serializing to JSON
+  def as_dict(self):
+    return {"name": self.name, "image_path": self.image_path}
+
 
 # Collection model
 class Collection(db.Model):
@@ -25,30 +29,37 @@ class Collection(db.Model):
   user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
   items = relationship("Item", backref="collections")
 
+  # For serializing to JSON
+  def as_dict(self):
+    return {
+      "name": self.name,
+      "image_path": self.image_path,
+      "items": [item.as_dict() for item in self.items]
+    }
+
   @classmethod
   def return_by_name(cls, username, collection_name):
-
-    def to_json(x):
-      return {"name": x.name, "image_path": x.image_path}
 
     user = User.find_by_username(username)
     return {
       "collections":
         list(
-          map(lambda x: to_json(x),
-              Collection.query.filter_by(user_id=user.id, name=collection_name)))
+          map(lambda x: x.as_dict(),
+              Collection.query.filter_by(user_id=user.id,
+                                         name=collection_name)))
     }
+
+  def save_to_db(self):
+    db.session.add(self)
+    db.session.commit()
 
   @classmethod
   def return_all(cls, username):
 
-    def to_json(x):
-      return {"name": x.name, "image_path": x.image_path}
-
     user = User.find_by_username(username)
     return {
       "collections":
         list(
-          map(lambda x: to_json(x),
+          map(lambda x: x.as_dict(),
               Collection.query.filter_by(user_id=user.id)))
     }

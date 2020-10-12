@@ -132,11 +132,12 @@
 { status: 403, data: "<Reason>" }
 ~~~
 
-## /api/collections/:name -> PUT
+## /api/collections -> PUT
 ### This endpoint updates a collection (adds a new item to a collection)
 
 #### Request body:
 * auth_token: string
+* collection_name: string
 * item: dict { ... }
 #### Returns:
 * Success:
