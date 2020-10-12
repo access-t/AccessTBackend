@@ -1,9 +1,9 @@
 from flask import Flask
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
-from database import db
 
-from resources import login, registration
+from database import db
+from resources import login, registration, collections
 
 # Create flask app
 app = Flask(__name__)
@@ -32,6 +32,7 @@ def create_tables():
 # Add resources
 api.add_resource(login.UserLogin, "/api/account/login")
 api.add_resource(registration.UserRegistration, "/api/account/create")
+api.add_resource(collections.Collections, "/api/collections")
 
 if __name__ == "__main__":
   app.run(debug=True)

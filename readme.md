@@ -122,7 +122,7 @@
 #### Request body:
 * auth_token: string
 * collection_name: string
-* image: blob (?)
+* image_path: string
 #### Returns:
 * Success:
 ~~~
