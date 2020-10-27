@@ -27,10 +27,14 @@ parser_put = reqparse.RequestParser()
 parser_put.add_argument("collection_name",
                         help="collection_name field cannot be blank",
                         required=True)
-parser_put.add_argument("item",
-                        help="item field cannot be blank",
-                        required=True,
-                        type=dict)
+parser_put.add_argument("name",
+                        help="name field cannot be blank",
+                        required=True)
+parser_put.add_argument("image",
+                         type=werkzeug.datastructures.FileStorage,
+                         help="image field cannot be blank",
+                         location="files",
+                         required=True)
 
 
 # User collections resource
@@ -39,6 +43,7 @@ class Collections(Resource):
 
   @jwt_required
   def get(self):
+    # TODO we need to return the image here
     data = parser_get.parse_args()
     name = data["name"]
     if not name:
@@ -57,8 +62,11 @@ class Collections(Resource):
     if not user:
       return {"message": "User {} doesn't exist".format(username)}, 500
 
-    if Collection.query.filter_by(user_id=user.id, name=collection_name).count() > 0:
-      return {"message": "Collection {} already exists".format(collection_name)}, 500
+    if Collection.query.filter_by(user_id=user.id,
+                                  name=collection_name).count() > 0:
+      return {
+        "message": "Collection {} already exists".format(collection_name)
+      }, 500
 
     try:
       user.collections.append(
@@ -75,7 +83,9 @@ class Collections(Resource):
   def put(self):
     data = parser_put.parse_args()
     collection_name = data["collection_name"]
-    item = data["item"]
+    name = data["name"]
+    image_name = "{}.{}".format(name, "jpg")
+    image_file = data["image"]
     username = get_jwt_identity()
     user = User.find_by_username(username)
 
@@ -84,10 +94,16 @@ class Collections(Resource):
 
     collection = Collection.query.filter_by(user_id=user.id,
                                             name=collection_name).first()
-    collection.items.append(
-      Item(name=item["name"], image_path=item["image_path"]))
+    
+    if collection is None:
+      return {"message": "Collection {} doesn't exist".format(collection_name)}, 500
+
+    if collection.items.filter(Item.name == name).count() > 0:
+      return {"message": "Item with name {} already exists".format(name)}, 500
 
     try:
+      collection.items.append(Item(name=name, image_path=image_name))
+      util.save_file(image_file, [username, collection_name, "items"], image_name)
       collection.save_to_db()
       return {
         "message": "Collection {} was updated".format(collection_name),

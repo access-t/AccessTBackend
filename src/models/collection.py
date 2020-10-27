@@ -27,7 +27,7 @@ class Collection(db.Model):
   name = db.Column(db.String(120), nullable=False)
   image_path = db.Column(db.String(120), nullable=False)
   user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-  items = relationship("Item", backref="collections")
+  items = relationship("Item", backref="collections", lazy="dynamic")
 
   # For serializing to JSON
   def as_dict(self):
