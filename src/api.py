@@ -11,11 +11,11 @@ api = Api(app)
 
 # Configure flask app
 app.config[
-  "SECRET_KEY"] = "my name is ozymandius, king of kings:"  # TODO change this
+  "SECRET_KEY"] = "my name is ozymandias, king of kings:"  # TODO change this
 app.config[
   "JWT_SECRET_KEY"] = "look on my works, ye mighty, and despair!"  # TODO change this
 app.config[
-  "SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"  # TODO testing DB only
+  "SQLALCHEMY_DATABASE_URI"] = "mysql://accesst:AverageSubstanceBoard!@access-t.c6haj1wwubyo.us-east-2.rds.amazonaws.com/accesst"  # TODO store credentials somewhere safe, like HashiCorp Vault?
 app.config["SQLALCHEMY_COMMIT_ON_TEARDOWN"] = True
 
 # Initialize flask app

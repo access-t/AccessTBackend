@@ -43,7 +43,6 @@ class Collections(Resource):
 
   @jwt_required
   def get(self):
-    # TODO we need to return the image here
     data = parser_get.parse_args()
     name = data["name"]
     if not name:
@@ -54,7 +53,6 @@ class Collections(Resource):
   def post(self):
     data = parser_post.parse_args()
     collection_name = data["collection_name"]
-    image_name = "{}.{}".format(collection_name, "jpg")
     image_file = data["image"]
     username = get_jwt_identity()
     user = User.find_by_username(username)
@@ -70,8 +68,7 @@ class Collections(Resource):
 
     try:
       user.collections.append(
-        Collection(name=collection_name, image_path=image_name))
-      util.save_file(image_file, [username, collection_name], image_name)
+        Collection(name=collection_name, image=util.base64_encode(image_file)))
       user.save_to_db()
       return {
         "message": "Collection {} was added".format(collection_name),
@@ -84,7 +81,6 @@ class Collections(Resource):
     data = parser_put.parse_args()
     collection_name = data["collection_name"]
     name = data["name"]
-    image_name = "{}.{}".format(name, "jpg")
     image_file = data["image"]
     username = get_jwt_identity()
     user = User.find_by_username(username)
@@ -102,8 +98,7 @@ class Collections(Resource):
       return {"message": "Item with name {} already exists".format(name)}, 500
 
     try:
-      collection.items.append(Item(name=name, image_path=image_name))
-      util.save_file(image_file, [username, collection_name, "items"], image_name)
+      collection.items.append(Item(name=name, image=util.base64_encode(image_file)))
       collection.save_to_db()
       return {
         "message": "Collection {} was updated".format(collection_name),

@@ -2,21 +2,20 @@ from database import db
 from models.user import User
 from sqlalchemy.orm import relationship
 
-
 # Item model
 class Item(db.Model):
   __tablename__ = "items"
 
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(120), nullable=False)
-  image_path = db.Column(db.String(120), nullable=False)
+  image = db.Column(db.String(4294000000), nullable=False)
   collection_id = db.Column(db.Integer,
                             db.ForeignKey("collections.id"),
                             nullable=False)
 
   # For serializing to JSON
   def as_dict(self):
-    return {"name": self.name, "image_path": self.image_path}
+    return {"name": self.name, "image": self.image}
 
 
 # Collection model
@@ -25,7 +24,7 @@ class Collection(db.Model):
 
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(120), nullable=False)
-  image_path = db.Column(db.String(120), nullable=False)
+  image = db.Column(db.String(4294000000), nullable=False)
   user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
   items = relationship("Item", backref="collections", lazy="dynamic")
 
@@ -33,8 +32,8 @@ class Collection(db.Model):
   def as_dict(self):
     return {
       "name": self.name,
-      "image_path": self.image_path,
-      "items": [item.as_dict() for item in self.items]
+      "image": self.image,
+      "items": [item.as_dict() for item in self.items],
     }
 
   @classmethod
@@ -55,7 +54,6 @@ class Collection(db.Model):
 
   @classmethod
   def return_all(cls, username):
-
     user = User.find_by_username(username)
     return {
       "collections":

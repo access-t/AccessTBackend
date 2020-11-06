@@ -1,9 +1,4 @@
-import os, werkzeug
+import base64
 
-
-def save_file(file, path, filename):
-  image_name = werkzeug.utils.secure_filename(filename)
-  new_path = os.path.join("../images", *path)
-  if not os.path.exists(new_path):
-    os.makedirs(new_path)
-  file.save(os.path.join(new_path, image_name))
+def base64_encode(image):
+  return base64.b64encode(image.read()).decode("utf-8")
