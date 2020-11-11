@@ -17,6 +17,10 @@ class Item(db.Model):
   def as_dict(self):
     return {"name": self.name, "image": self.image}
 
+  def delete(self):
+    db.session.delete(self)
+    db.session.commit()
+
 
 # Collection model
 class Collection(db.Model):
@@ -50,6 +54,10 @@ class Collection(db.Model):
 
   def save_to_db(self):
     db.session.add(self)
+    db.session.commit()
+
+  def delete(self):
+    db.session.delete(self)
     db.session.commit()
 
   @classmethod
