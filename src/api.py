@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 
@@ -7,7 +8,9 @@ from resources import login, registration, collections
 
 # Create flask app
 app = Flask(__name__)
+app.config["CORS_HEADERS"] = "Content-Type"
 api = Api(app)
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Configure flask app
 app.config[
