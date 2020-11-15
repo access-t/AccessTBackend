@@ -2,9 +2,6 @@
 ***
 # Review:
 
-### TODO
-- Update documentation using JWT tokens
-
 ## /api/account/create -> POST
 ### This endpoint submits a request for registering a new account
 #### Request body:
@@ -15,19 +12,18 @@
 * password: string
 #### Returns:
 * Success:
-
+Status 200
 ~~~
 {
-  status: 200,
-  data: {
-    token: "..."
-  }
+  message: "User <user> was created",
+  access_token: <access_token>
 }
 ~~~
 
 * Failure:
+Status 500
 ~~~
-{ status: 403, data: "<Reason>" }
+{ message: "Could not register user" }
 ~~~
 
 ---
@@ -39,18 +35,18 @@
 * password: string
 #### Returns:
 * Success:
+Status 200
 ~~~
 {
-  status: 200,
-  data: {
-    token: "..."
-  }
+  message: "Logged in as <user>"
+  access_token: <access_token>
 }
 ~~~
 
 * Failure:
+Status 500
 ~~~
-{ status: 403, data: "<Reason>" }
+{ message: <reason> }
 ~~~
 
 ---
@@ -61,18 +57,18 @@
 * auth_token: string
 #### Returns:
 * Success:
+Status 200
 ~~~
 {
-  status: 200,
   data: {
     collections: [
       {
         name: "...",
-        image_path: "...",
+        image: "...",
         items: [
           {
             name: "...",
-            image_path: "...",
+            image: "...",
           },
           ...
         ]
@@ -83,36 +79,41 @@
 }
 ~~~
 * Failure:
+Status 500
 ~~~
-{ status: 403, data: "<Reason>" }
+{ message: <reason> }
 ~~~
 
-## /api/collections?name=<name> -> GET
+## /api/collections -> GET
 ### This endpoint retrieves a specific collection by a given name
 
 #### Request body:
 * auth_token: string
+* name: string
 #### Returns:
 * Success:
+Status 200
 ~~~
 {
-  status: 200,
-  data: {
-    name: "...",
-    image_path: "...",
-    items: [
-      {
-        name: "...",
-        image_path: "...",
-      },
-      ...
-    ]
-  }
+  collections: [
+    {
+      name: "...",
+      image_path: "...",
+      items: [
+        {
+          name: "...",
+          image_path: "...",
+        },
+        ...
+      ]
+    }
+  ]
 }
 ~~~
 * Failure:
+Status 500
 ~~~
-{ status: 403, data: "<Reason>" }
+{ message: <reason> }
 ~~~
 
 ## /api/collections -> POST
@@ -121,15 +122,17 @@
 #### Request body:
 * auth_token: string
 * collection_name: string
-* image_path: string
+* image: string
 #### Returns:
 * Success:
+Status 200
 ~~~
-{ status: 200, data: "Success" }
+{ message: "Collection <name> was added" }
 ~~~
 * Failure:
+Status 500
 ~~~
-{ status: 403, data: "<Reason>" }
+{ message: <reason> }
 ~~~
 
 ## /api/collections -> PUT
@@ -138,28 +141,35 @@
 #### Request body:
 * auth_token: string
 * collection_name: string
-* item: dict { ... }
+* name: string (new item name)
+* image: string
 #### Returns:
 * Success:
+Status 200
 ~~~
-{ status: 200, data: "Success" }
+{ message: "Collection <name> was updated" }
 ~~~
 * Failure:
+Status 500
 ~~~
-{ status: 403, data: "<Reason>" }
+{ message: <reason> }
 ~~~
 
 ## /api/collections/:name -> DELETE
-### This endpoint deletes a collection by name
+### This endpoint deletes a collection by name entirely, or a specified item in the collection
 
 #### Request body:
 * auth_token: string
+* collection_name: string
+* item_name: string (if this is either absent or "all", the entire collection will be deleted. otherwise, only a specific item will be deleted)
 #### Returns:
 * Success:
+Status 200
 ~~~
-{ status: 200, data: "Success" }
+{ message: "Success" }
 ~~~
 * Failure:
+Status 500
 ~~~
-{ status: 403, data: "<Reason>" }
+{ message: <reason> }
 ~~~
