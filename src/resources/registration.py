@@ -40,7 +40,7 @@ class UserRegistration(Resource):
 
     try:
       new_user.save_to_db()
-      access_token = create_access_token(identity=username)
+      access_token = create_access_token(identity=username, expires_delta=False)
       return {
         "message": "User {} was created".format(username),
         "access_token": access_token

@@ -25,7 +25,7 @@ class UserLogin(Resource):
       return {"message": "User {} doesn't exist".format(username)}, 500
 
     if User.verify_hash(data["password"], user.password):
-      access_token = create_access_token(identity=username)
+      access_token = create_access_token(identity=username, expires_delta=False)
       return {
         "message": "Logged in as {}".format(user.username),
         "access_token": access_token
