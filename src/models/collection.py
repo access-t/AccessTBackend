@@ -30,7 +30,7 @@ class Collection(db.Model):
   name = db.Column(db.String(120), nullable=False)
   image = db.Column(db.String(4294000000), nullable=False)
   user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-  items = relationship("Item", backref="collections", lazy="dynamic")
+  items = relationship("Item", cascade="all,delete", backref="collections", lazy="dynamic")
 
   # For serializing to JSON
   def as_dict(self):

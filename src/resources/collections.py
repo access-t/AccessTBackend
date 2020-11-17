@@ -136,7 +136,7 @@ class Collections(Resource):
       }, 500
 
     try:
-      if item_name is None or item_name == "all":
+      if item_name is None or item_name == "all" or not item_name:
         collection.delete()
         return {
           "message":
@@ -147,5 +147,5 @@ class Collections(Resource):
                                     collection_id=collection.id).first()
         item.delete()
         return {"message": "Item {} successfully deleted".format(item_name)}
-    except:
-      return {"message": "Failed to delete"}, 500
+    except BaseException as e:
+      return {"message": f"Failed to delete: {str(e)}"}, 500
